@@ -8,17 +8,15 @@
     <title>Lista dos Cartões</title>
 
 </head>
-    <body>
-
-        <div class="row">
-            @foreach($cartoes as $cartao)
-                <img src="{{ asset('image/cartao.jpeg') }}"  style="width: 341px; height: 189px;"  />
-                <div>
-                    <p>{!! DNS1D::getBarcodeHTML($cartao->codg_barra, "EAN13") !!}</p>
-                    <p>{{ $cartao->codg_barra }}</p>
-                </div>
-            @endforeach
-        </div>
-
-    </body>
+<body>
+    <div class="row">
+        @foreach($cartoes as $cartao)
+            <img src="{{ asset('image/cartao.jpeg') }}" style="width: 341px; height: 189px;"/>
+            <div>
+                <p>{!! DNS1D::getBarcodeHTML($cartao->codg_barra, "EAN13") !!}</p>
+                <p>{{ $cartao->codg_barra }}</p>
+            </div>
+        @endforeach
+    </div>
+</body>
 </html>

@@ -20,7 +20,7 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::group(['midleware' => 'auth',  'as' => 'cartao.', 'prefix' => 'cartao' ], function (){
+Route::group(['middleware' => 'auth',  'as' => 'cartao.', 'prefix' => 'cartao' ], function (){
     Route::any('home',    ['as' => 'index',   'uses' => 'CartaoController@index']);
     Route::get('create',  ['as' => 'create',  'uses' => 'CartaoController@create']);
     Route::post('store',  ['as' => 'store',   'uses' => 'CartaoController@store']);
