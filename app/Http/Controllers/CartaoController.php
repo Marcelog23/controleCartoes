@@ -24,7 +24,10 @@ class CartaoController extends Controller
     $this->cartao = $cartao;
   }
 
-
+  /** Busca o código do cartão e atualiza seu status, logo retorna para index atualizando demais campos
+   * @param Request $request
+   * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+   */
   public function index(Request $request)
   {
     $filtro             = $request->get('filtro');
@@ -62,8 +65,8 @@ class CartaoController extends Controller
         {
           $this->cartao->create
           ([
-            'codg_barra' => \Carbon\Carbon::now()->format('Ymd') . '0' . $i,
-            'status' => 'NL'
+           'codg_barra' => \Carbon\Carbon::now()->format('Ymd') . '0' . $i,
+            'status'     => 'NL'
           ]);
         }
         return redirect()->back();
@@ -82,7 +85,7 @@ class CartaoController extends Controller
    */
   public function show($id)
   {
-//
+    //
   }
 
   /**
@@ -104,12 +107,14 @@ class CartaoController extends Controller
     }
   }
 
+  /** Gera pdf
+   * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+   */
   public function geraPdfCartao()
   {
     $cartoes = DB::table('cartaos')->get();
     return view('aplicacao.cartao', compact('cartoes'));
   }
-
 
   /**
    * Update the specified resource in storage.
@@ -120,7 +125,24 @@ class CartaoController extends Controller
    */
   public function update(Request $request, $id)
   {
+    //
+  }
 
+  /** Retorna o cartão para o status de Não Lido
+   * @param $id
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function restore($id)
+  {
+    if (!$id)
+    {
+      return redirect()->back();
+    }
+    else
+    {
+      DB::table('cartaos')->where('id', $id)->update(['status' => 'NL']);
+      return redirect()->back();
+    }
   }
 
   /**
@@ -131,6 +153,6 @@ class CartaoController extends Controller
    */
   public function destroy($id)
   {
-//
+    //
   }
 }

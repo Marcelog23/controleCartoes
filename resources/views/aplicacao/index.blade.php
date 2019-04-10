@@ -19,17 +19,28 @@
                         Últimos 3 cartões lidos
                     </div>
                     <div class="panel-body">
-                        @forelse($ultimosLidos as $ultimo)
-                            <ul>
-                                <li>Id : {{$ultimo->id}}</li>
-                                <li>Código Barra : {{$ultimo->codg_barra}}</li>
-                                <li>Hora da leitura
-                                    : {{\Carbon\Carbon::parse($ultimo->updated_at)->format('d/m/Y h:i:s')}}</li>
-                            </ul>
-                        @empty
-                            <p class="text-danger">Não existem registros</p>
-                        @endforelse
-
+                            <table class="table table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>Código Barra</td>
+                                        <td>Data/Hora Leitura</td>
+                                        <td class="text-center">Retornar</td>
+                                    </tr>
+                                </thead>
+                                @forelse($ultimosLidos as $ultimo)
+                                <tbody>
+                                    <tr>
+                                        <td>{{$ultimo->id}}</td>
+                                        <td>{{$ultimo->codg_barra}}</td>
+                                        <td>{{\Carbon\Carbon::parse($ultimo->updated_at)->format('d/m/Y H:i:s')}}</td>
+                                        <td class="text-center"> <a title="Retorna o cartão para status de Não Lido" href="{{route('cartao.restore', $ultimo->id)}}"> <i class="fas fa-undo-alt" aria-hidden="true"></i> </a> </td>
+                                    </tr>
+                                </tbody>
+                                @empty
+                                    <p class="text-danger">Não existem registros</p>
+                                @endforelse
+                            </table>
                     </div>
                 </div>
             </div>
@@ -40,7 +51,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="well well-sm">
-                    {!! Form::open(['name' => 'form-search', 'route'=>'cartao.index']) !!}
+                    {!! Form::open(['name' => 'form-search', 'route' => 'cartao.index']) !!}
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Insira o Código de Barras"
                                aria-label="Recipient's username" aria-describedby="button-addon2" name="filtro"
@@ -54,6 +65,13 @@
             </div>
         </div>
     </div>
+
+    @if (Session::has('errors'))
+        <div class="alert alert-danger alert-block">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong> {{ Session::get('errors') }}</strong>
+        </div>
+    @endif
 
     <div class="container-fluid">
         <div class="row">

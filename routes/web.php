@@ -21,9 +21,10 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth',  'as' => 'cartao.', 'prefix' => 'cartao' ], function (){
-    Route::any('home',    ['as' => 'index',   'uses' => 'CartaoController@index']);
-    Route::get('create',  ['as' => 'create',  'uses' => 'CartaoController@create']);
-    Route::post('store',  ['as' => 'store',   'uses' => 'CartaoController@store']);
-    Route::get('geraPdf', ['as' => 'geraPdf', 'uses' => 'CartaoController@geraPdfCartao']);
+    Route::any('home',         ['as' => 'index',   'uses' => 'CartaoController@index']);
+    Route::get('create',       ['as' => 'create',  'uses' => 'CartaoController@create']);
+    Route::post('store',       ['as' => 'store',   'uses' => 'CartaoController@store']);
+    Route::get('{id}/restore', ['as' => 'restore', 'uses' => 'CartaoController@restore']);
+    Route::get('geraPdf',      ['as' => 'geraPdf', 'uses' => 'CartaoController@geraPdfCartao']);
 });
 
