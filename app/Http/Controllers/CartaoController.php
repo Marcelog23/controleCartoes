@@ -31,11 +31,12 @@ class CartaoController extends Controller
   public function index(Request $request)
   {
     $filtro             = $request->get('filtro');
-    $cartoes            = $this->cartao->getCartao($filtro);
     $totalCartao        = $this->cartao->getTotalCartao();
     $totalCartaoBaixado = $this->cartao->getTotalCartaoBaixado();
     $ultimosLidos       = $this->cartao->getUltimosLidos();
-    return view('aplicacao.index', compact('cartoes', 'totalCartao', 'totalCartaoBaixado', 'ultimosLidos'));
+    //$cartoes            = $this->cartao->getCartao($filtro);
+
+    return view('aplicacao.index', compact( 'totalCartao', 'totalCartaoBaixado', 'ultimosLidos'));
   }
 
   /**
@@ -46,11 +47,10 @@ class CartaoController extends Controller
   public function create()
   {
     return view('aplicacao.create');
-
   }
 
   /**
-   * Store a newly created resource in storage.
+   * Cria a qtd de cartões conforme a necessidade
    *
    * @param  \Illuminate\Http\Request $request
    * @return \Illuminate\Http\Response
@@ -94,26 +94,28 @@ class CartaoController extends Controller
    * @param  int $id
    * @return \Illuminate\Http\Response
    */
-  public function edit($id)
+  public function edit(Request $request)
   {
-    if (!$id)
+    $filtro = $request->get("filtro");
+
+    if (!$filtro)
     {
       return redirect()->back();
     }
     else
     {
-      DB::table('cartaos')->where('id', $id)->update(['status' => 'L']);
-      return redirect()->back();
+      $cartao = DB::table('cartaos')->select('id', 'codg_barra', 'status', 'updated_at')->where('codg_barra', '=', $filtro)->get();
+      if ($cartao[0]->status == "L")
+      {
+        flash()->overlay("Cartão lido as :" . \Carbon\Carbon::parse($cartao[0]->updated_at)->format('d/m/Y H:i:s'), 'Atenção');
+        return redirect()->route('cartao.index');
+      }
+      else
+      {
+        DB::table('cartaos')->where('id', $cartao[0]->id)->update(['status' => 'L', 'updated_at' => date("Y-m-d H:i:s")]);
+        return redirect()->route('cartao.index');
+      }
     }
-  }
-
-  /** Gera pdf
-   * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-   */
-  public function geraPdfCartao()
-  {
-    $cartoes = DB::table('cartaos')->get();
-    return view('aplicacao.cartao', compact('cartoes'));
   }
 
   /**
@@ -140,8 +142,8 @@ class CartaoController extends Controller
     }
     else
     {
-      DB::table('cartaos')->where('id', $id)->update(['status' => 'NL']);
-      return redirect()->back();
+     DB::table('cartaos')->where('id', $id)->update(['status' => 'NL', 'updated_at' => date("Y-m-d H:i:s")]);
+     return redirect()->route('cartao.index');
     }
   }
 
@@ -154,5 +156,15 @@ class CartaoController extends Controller
   public function destroy($id)
   {
     //
+  }
+
+
+  /** Gera pdf
+   * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+   */
+  public function geraPdfCartao()
+  {
+    $cartoes = DB::table('cartaos')->get();
+    return view('aplicacao.cartao', compact('cartoes'));
   }
 }

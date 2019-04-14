@@ -23,15 +23,18 @@ class Cartao extends Model
     {
       $cartao = DB::table('cartaos')->select('codg_barra', 'status', 'updated_at')->where('codg_barra', '=', $filtro)->get();
 
-      //dd($cartao[0]->status);
+      //dd($cartao);
+      $msg = "";
       if ($cartao[0]->status == 'L')
       {
         //AJUSTAR RETORNO COM ERROS
-        return redirect()->route('cartao.index')->with('errors', "Cartão lido em: {$cartao[0]->updated_at}");
+        //return redirect()->route('cartao.index')->with('errors', "Cartão lido em: {$cartao[0]->updated_at}");
+        $msg = "Cartão lido em {$cartao[0]->updated_at}";
+        return $this->where('status', '=', 'NL')->paginate(100);
       }
       else
       {
-        $this->where('codg_barra', $filtro)->update(['status' => 'L']);
+        $this->where('codg_barra', '=', $filtro)->update(['status' => 'L']);
         return $this->where('status', '=', 'NL')->paginate(100);
       }
     }
@@ -49,7 +52,10 @@ class Cartao extends Model
 
   public function getUltimosLidos()
   {
+
     return DB::table('cartaos')->where('status', '=', 'L')->orderBy('updated_at', 'desc')->limit(3)->get();
+   // return dd(DB::table('cartaos')->where('status', '=', 'L')->orderBy('updated_at', 'desc')->limit(3)->get());
+    //return  DB::table('cartaos')->where('status', '=', 'L')->oldest('updated_at')->limit(3)->get();
   }
 
 }

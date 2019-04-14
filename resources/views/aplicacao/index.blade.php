@@ -34,11 +34,13 @@
                                         <td>{{$ultimo->id}}</td>
                                         <td>{{$ultimo->codg_barra}}</td>
                                         <td>{{\Carbon\Carbon::parse($ultimo->updated_at)->format('d/m/Y H:i:s')}}</td>
-                                        <td class="text-center"> <a title="Retorna o cartão para status de Não Lido" href="{{route('cartao.restore', $ultimo->id)}}"> <i class="fas fa-undo-alt" aria-hidden="true"></i> </a> </td>
+                                        <td class="text-center"> <a title="Retorna o cartão para status de 'Não Lido' " href="{{route('cartao.restore', $ultimo->id)}}"> <i class="fas fa-undo-alt" aria-hidden="true"></i> </a> </td>
                                     </tr>
                                 </tbody>
                                 @empty
-                                    <p class="text-danger">Não existem registros</p>
+                                    <tfoot>
+                                        <td class="text-danger" colspan="4">Não existem registros</td>
+                                    </tfoot>
                                 @endforelse
                             </table>
                     </div>
@@ -51,7 +53,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="well well-sm">
-                    {!! Form::open(['name' => 'form-search', 'route' => 'cartao.index']) !!}
+                    {!! Form::open(['name' => 'form-search', 'route' => 'cartao.edit']) !!}
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Insira o Código de Barras"
                                aria-label="Recipient's username" aria-describedby="button-addon2" name="filtro"
@@ -66,13 +68,8 @@
         </div>
     </div>
 
-    @if (Session::has('errors'))
-        <div class="alert alert-danger alert-block">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <strong> {{ Session::get('errors') }}</strong>
-        </div>
-    @endif
 
+{{--
     <div class="container-fluid">
         <div class="row">
             @foreach($cartoes as $cartao)
@@ -89,5 +86,5 @@
             @endforeach
         </div>
         {{ $cartoes->links()}}
-    </div>
+    </div>--}}
 @endsection
