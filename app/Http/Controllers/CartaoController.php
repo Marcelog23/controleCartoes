@@ -65,7 +65,8 @@ class CartaoController extends Controller
         {
           $this->cartao->create
           ([
-           'codg_barra' => \Carbon\Carbon::now()->format('Ymd') . '0' . $i,
+           //'codg_barra' => \Carbon\Carbon::now()->format('ymd') .  $i,
+            'codg_barra' => "190518" . $i,
             'status'     => 'NL'
           ]);
         }
