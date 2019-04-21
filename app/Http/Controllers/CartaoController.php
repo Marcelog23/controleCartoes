@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cartao;
 use Barryvdh\DomPDF\PDF as PDF;
+use Dotenv\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -30,13 +31,13 @@ class CartaoController extends Controller
    */
   public function index(Request $request)
   {
-    $filtro             = $request->get('filtro');
-    $totalCartao        = $this->cartao->getTotalCartao();
+    $filtro = $request->get('filtro');
+    $totalCartao = $this->cartao->getTotalCartao();
     $totalCartaoBaixado = $this->cartao->getTotalCartaoBaixado();
-    $ultimosLidos       = $this->cartao->getUltimosLidos();
+    $ultimosLidos = $this->cartao->getUltimosLidos();
     //$cartoes            = $this->cartao->getCartao($filtro);
 
-    return view('aplicacao.index', compact( 'totalCartao', 'totalCartaoBaixado', 'ultimosLidos'));
+    return view('aplicacao.cartao.index', compact('totalCartao', 'totalCartaoBaixado', 'ultimosLidos'));
   }
 
   /**
@@ -46,7 +47,7 @@ class CartaoController extends Controller
    */
   public function create()
   {
-    return view('aplicacao.create');
+    return view('aplicacao.cartao.create');
   }
 
   /**
@@ -58,23 +59,20 @@ class CartaoController extends Controller
   public function store(Request $request)
   {
     $qtdCartao = $request->get('nrCartao');
-    if ($qtdCartao)
-    {
-      try {
-        for ($i = 1; $i <= $qtdCartao; $i++)
-        {
-          $this->cartao->create
-          ([
-           //'codg_barra' => \Carbon\Carbon::now()->format('ymd') .  $i,
-            'codg_barra' => "190518" . $i,
-            'status'     => 'NL'
-          ]);
-        }
-        return redirect()->back();
-      } catch (Exception $e)
-      {
-        return redirect()->back($e->getMessage());
+    try {
+      for ($i = 1; $i <= $qtdCartao; $i++) {
+        $this->cartao->create
+        ([
+          //'codg_barra' => \Carbon\Carbon::now()->format('ymd') .  $i,
+          'codg_barra' => "190518" . $i,
+          'status' => 'NL',
+          'responsavel_id' => null
+        ]);
       }
+      return redirect()->route('cartao.index');
+
+    } catch (Exception $e) {
+      return redirect()->back($e->getMessage());
     }
   }
 
@@ -90,8 +88,7 @@ class CartaoController extends Controller
   }
 
   /**
-   * Show the form for editing the specified resource.
-   *
+   * Metodo altera o status do cartão para lido, ou verifica se o mesmo já foi lido
    * @param  int $id
    * @return \Illuminate\Http\Response
    */
@@ -99,20 +96,14 @@ class CartaoController extends Controller
   {
     $filtro = $request->get("filtro");
 
-    if (!$filtro)
-    {
+    if (!$filtro) {
       return redirect()->back();
-    }
-    else
-    {
+    } else {
       $cartao = DB::table('cartaos')->select('id', 'codg_barra', 'status', 'updated_at')->where('codg_barra', '=', $filtro)->get();
-      if ($cartao[0]->status == "L")
-      {
+      if ($cartao[0]->status == "L") {
         flash()->overlay("Cartão lido as :" . \Carbon\Carbon::parse($cartao[0]->updated_at)->format('d/m/Y H:i:s'), 'Atenção');
         return redirect()->route('cartao.index');
-      }
-      else
-      {
+      } else {
         DB::table('cartaos')->where('id', $cartao[0]->id)->update(['status' => 'L', 'updated_at' => date("Y-m-d H:i:s")]);
         return redirect()->route('cartao.index');
       }
@@ -137,14 +128,11 @@ class CartaoController extends Controller
    */
   public function restore($id)
   {
-    if (!$id)
-    {
+    if (!$id) {
       return redirect()->back();
-    }
-    else
-    {
-     DB::table('cartaos')->where('id', $id)->update(['status' => 'NL', 'updated_at' => date("Y-m-d H:i:s")]);
-     return redirect()->route('cartao.index');
+    } else {
+      DB::table('cartaos')->where('id', $id)->update(['status' => 'NL', 'updated_at' => date("Y-m-d H:i:s")]);
+      return redirect()->route('cartao.index');
     }
   }
 
@@ -166,6 +154,12 @@ class CartaoController extends Controller
   public function geraPdfCartao()
   {
     $cartoes = DB::table('cartaos')->get();
-    return view('aplicacao.cartao', compact('cartoes'));
+    return view('aplicacao.cartao.cartao', compact('cartoes'));
+  }
+
+  public function listCartoesAndResponsavel()
+  {
+    $cartoes = $this->cartao->paginate(50);
+    return view('aplicacao.cartao.listagem', compact('cartoes'));
   }
 }

@@ -10,7 +10,8 @@ class Cartao extends Model
 {
   protected $fillable = [
     'codg_barra',
-    'status'
+    'status',
+    'responsavel_id'
   ];
 
 
@@ -52,10 +53,11 @@ class Cartao extends Model
 
   public function getUltimosLidos()
   {
-
     return DB::table('cartaos')->where('status', '=', 'L')->orderBy('updated_at', 'desc')->limit(3)->get();
-   // return dd(DB::table('cartaos')->where('status', '=', 'L')->orderBy('updated_at', 'desc')->limit(3)->get());
-    //return  DB::table('cartaos')->where('status', '=', 'L')->oldest('updated_at')->limit(3)->get();
   }
 
+  public function responsavel()
+  {
+    return $this->belongsTo('App\Models\Responsavel');
+  }
 }

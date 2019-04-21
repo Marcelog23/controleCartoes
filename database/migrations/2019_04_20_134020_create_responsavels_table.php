@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCartaosTable extends Migration
+class CreateResponsavelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateCartaosTable extends Migration
      */
     public function up()
     {
-        Schema::create('cartaos', function (Blueprint $table) {
+        Schema::create('responsavels', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('codg_barra');
-            $table->enum('status',['L','NL'])->default('NL');
+            $table->string('nm_responsavel');
+            $table->integer('nr_inicial')->unsigned();
+            $table->integer('nr_final')->unsigned();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateCartaosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cartaos');
+        Schema::dropIfExists('responsavels');
     }
 }
