@@ -54,16 +54,14 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container">
         <div class="row">
             <div class="col-md-12">
                 <div class="well well-sm">
                     {!! Form::open(['name' => 'form-search', 'route' => 'cartao.edit']) !!}
                     <div class="input-group">
 
-                        {!! Form::text('filtro', null, ['class' => 'form-control', 'placeholder' => 'Insira o Código de Barras']) !!}
+                        {!! Form::text('filtro', null, ['class' => 'form-control', 'placeholder' => 'Insira o Código de Barras', 'required']) !!}
                         <span class="input-group-btn">
                             <button class="btn btn-success" type="submit">Ler Cartão</button>
                         </span>
